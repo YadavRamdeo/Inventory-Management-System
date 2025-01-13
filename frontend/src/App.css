@@ -92,6 +92,42 @@ aside button {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  text-align: left;
+  /* Align text to the left */
+  width: 90%;
+  /* Adjust button width */
+  margin-left: 5%;
+  /* Center buttons with slight left alignment */
+}
+
+aside button:hover {
+  background-color: #149c5d;
+}
+
+/* Submenu Buttons */
+.submenu button {
+  padding: 0.5rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  color: white;
+  transition: background-color 0.3s ease;
+  text-align: left;
+  width: 85%;
+  /* Slightly more left adjustment for submenu buttons */
+  margin-left: 10%;
+  /* Indent submenu buttons more */
+}
+
+.submenu button:hover {
+  background-color: #149c5d;
+}
+
+/* Nested Submenu Styling */
+.submenu.nested button {
+  padding: 0.5rem;
+  width: 80%;
+  margin-left: 15%;
+  font-size: 0.9rem;
 }
 
 aside button:hover {
@@ -170,4 +206,56 @@ button:hover {
   display: flex;
   justify-content: flex-start;
   text-align: left;
+}
+
+/* ShipInventory.css */
+
+.inventory-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.inventory-actions {
+  margin-bottom: 16px;
+}
+
+.inventory-actions>div>button {
+  margin-left: 8px;
+}
+
+.MuiDataGrid-root {
+  border: none;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.MuiDataGrid-columnHeaders {
+  background-color: #f1f1f1;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.MuiDataGrid-cell {
+  font-size: 14px;
+}
+
+.MuiDataGrid-footerContainer {
+  background-color: #f1f1f1;
+}
+
+.MuiButton-containedPrimary {
+  background-color: #1976d2;
+  color: #ffffff;
+}
+
+.MuiButton-containedSecondary {
+  background-color: #d32f2f;
+  color: #ffffff;
+}
+
+.MuiTextField-root {
+  width: 200px;
 }

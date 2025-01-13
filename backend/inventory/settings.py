@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
     # Local apps
     'inventory_app',
+    'shiporders',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
 }
 
 # SIMPLE JWT CONFIGURATION

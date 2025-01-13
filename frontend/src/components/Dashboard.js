@@ -25,20 +25,33 @@ ChartJS.register(
 
 class Dashboard extends Component {
     state = {
-        items: [],
+        items: [], // Ensure it's an empty array by default
     };
 
     componentDidMount() {
         getItems()
             .then((response) => {
-                this.setState({ items: response.data });
+                this.setState({ items: response });
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
     }
 
+    // Pie Chart Data
     getPieData(items) {
+        if (!items || items.length === 0) {
+            return {
+                labels: [],
+                datasets: [
+                    {
+                        data: [],
+                        backgroundColor: [],
+                    },
+                ],
+            };
+        }
+
         return {
             labels: items.map((item) => item.name),
             datasets: [
@@ -50,7 +63,22 @@ class Dashboard extends Component {
         };
     }
 
+    // Bar Chart Data
     getBarData(items) {
+        if (!items || items.length === 0) {
+            return {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Quantity',
+                        backgroundColor: '#4CAF50',
+                        borderColor: '#388E3C',
+                        data: [],
+                    },
+                ],
+            };
+        }
+
         return {
             labels: items.map((item) => item.name),
             datasets: [

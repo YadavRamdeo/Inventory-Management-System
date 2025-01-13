@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { getItems } from '../services/api';
-import { Container, Typography, TextField, InputAdornment, Button, Box, Grid, MenuItem } from '@mui/material';
+import { Container, Typography, TextField, InputAdornment, Button, Box, Grid } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -23,11 +23,13 @@ class ViewItems extends Component {
         };
     }
 
+    // Fetch items from API when component mounts
     componentDidMount() {
-        // Fetch items from API when component mounts
         getItems()
             .then((response) => {
-                this.setState({ items: response.data, filteredItems: response.data });
+                const items = response || [];
+                console.log(response, "items")
+                this.setState({ items, filteredItems: items });
             })
             .catch((error) => {
                 this.setState({ error: 'Failed to load items. Please try again later.' });
@@ -35,11 +37,13 @@ class ViewItems extends Component {
             });
     }
 
+    // Handle search input change
     handleSearchChange = (event) => {
-        const query = event.target.value?.toLowerCase();
+        const query = event.target.value?.toLowerCase() || '';
         this.setState({ searchQuery: query }, this.applyFilters);
     };
 
+    // Handle filter input change
     handleFilterChange = (field, value) => {
         this.setState(
             (prevState) => ({
@@ -52,17 +56,15 @@ class ViewItems extends Component {
         );
     };
 
+    // Apply search and filters to items
     applyFilters = () => {
         const { items, searchQuery, filters } = this.state;
         const { minQuantity, maxQuantity, minPrice, maxPrice } = filters;
 
         const filtered = items.filter((item) => {
-            // Apply text search filter
             const matchesSearchQuery =
-                item.name?.toLowerCase().includes(searchQuery) ||
-                item.description?.toLowerCase().includes(searchQuery);
+                item.name?.toLowerCase().includes(searchQuery) || item.description?.toLowerCase().includes(searchQuery);
 
-            // Apply attribute filters
             const matchesQuantity =
                 (minQuantity === '' || item.quantity >= Number(minQuantity)) &&
                 (maxQuantity === '' || item.quantity <= Number(maxQuantity));
@@ -77,6 +79,7 @@ class ViewItems extends Component {
         this.setState({ filteredItems: filtered });
     };
 
+    // Handle Excel report download
     handleDownload = () => {
         const { filteredItems } = this.state;
         const worksheet = XLSX.utils.json_to_sheet(filteredItems);
@@ -90,117 +93,33 @@ class ViewItems extends Component {
     render() {
         const { filteredItems, error, searchQuery, filters } = this.state;
 
-        // Columns for the DataGrid
+        // Define columns for the DataGrid
         const columns = [
-            {
-                field: 'id',
-                headerName: 'ID',
-                width: 100,
-                headerAlign: 'center',
-                renderCell: (params) => (
-                    <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
-                ),
-            },
-            {
-                field: 'name',
-                headerName: 'Name',
-                width: 100,
-                headerAlign: 'center',
-                renderCell: (params) => (
-                    <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
-                ),
-            },
-            {
-                field: 'quantity',
-                headerName: 'Quantity',
-                type: 'number',
-                width: 100,
-                headerAlign: 'center',
-                renderCell: (params) => (
-                    <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
-                ),
-            },
-            {
-                field: 'price',
-                headerName: 'Price ($)',
-                type: 'number',
-                width: 100,
-                headerAlign: 'center',
-                renderCell: (params) => (
-                    <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
-                ),
-            },
-            {
-                field: 'description',
-                headerName: 'Description',
-                width: 300,
-                headerAlign: 'center',
-                renderCell: (params) => (
-                    <div style={{ textAlign: 'center', width: '100%' }}>{params.value}</div>
-                ),
-            },
+            { field: 'id', headerName: 'ID', width: 100 },
+            { field: 'name', headerName: 'Name', width: 150 },
+            { field: 'quantity', headerName: 'Quantity', type: 'number', width: 120 },
+            { field: 'price', headerName: 'Price ($)', type: 'number', width: 120 },
+            { field: 'description', headerName: 'Description', width: 300 },
         ];
 
         return (
             <Fragment>
-                <Container className="full-screen-container">
+                <Container>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            width="100%"
-                            textAlign="center"
-                        >
-                            <Typography
-                                variant="h4"
-                                component="h2"
-                                gutterBottom
-                            >
-                                View Items
-                            </Typography>
-                        </Box>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={this.handleDownload}
-                            size="small"
-                            sx={{
-                                padding: '4px 12px',
-                                fontSize: '0.80rem',
-                                borderRadius: '4px',
-                                textTransform: 'none',
-                                whiteSpace: 'nowrap', // Prevents text from wrapping
-                                minWidth: '100px',    // Ensures sufficient button width
-                            }}
-                        >
+                        <Typography variant="h4">View Items</Typography>
+                        <Button variant="contained" color="primary" onClick={this.handleDownload}>
                             Download Report
                         </Button>
-
                     </Box>
-                    {/* Search input field */}
+
+                    {/* Search Field */}
                     <TextField
                         label="Search Items"
                         variant="outlined"
                         fullWidth
                         value={searchQuery}
                         onChange={this.handleSearchChange}
-                        sx={{
-                            marginBottom: 2,
-                            backgroundColor: '#f7f7f7',
-                            borderRadius: '8px',
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: '#ccc',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: '#888',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: '#034ff1',
-                                },
-                            },
-                        }}
+                        sx={{ marginBottom: 2 }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -209,7 +128,8 @@ class ViewItems extends Component {
                             ),
                         }}
                     />
-                    {/* Filter input fields */}
+
+                    {/* Filter Fields */}
                     <Grid container spacing={2} mb={2}>
                         <Grid item xs={6} sm={3}>
                             <TextField
@@ -252,26 +172,26 @@ class ViewItems extends Component {
                             />
                         </Grid>
                     </Grid>
-                    {/* Display error message if any */}
-                    {error && <Typography color="error">{error}</Typography>}
-                    {/* Display DataGrid or no items message */}
-                    {filteredItems.length > 0 ? (
+
+                    {/* Display error or DataGrid */}
+                    {console.log(filteredItems, "Filteritems")}
+                    {error ? (
+                        <Typography color="error">{error}</Typography>
+                    ) : (
                         <div style={{ height: '65vh', width: '100%' }}>
                             <DataGrid
-                                sx={{
-                                    '.MuiDataGrid-columnHeaders': {
-                                        backgroundColor: 'red',
-                                    },
-                                }}
-                                rows={filteredItems}
+                                rows={filteredItems || []}
                                 columns={columns}
                                 pageSize={10}
                                 rowsPerPageOptions={[10, 20, 50]}
                                 checkboxSelection
+                                sx={{
+                                    '.MuiDataGrid-columnHeaders': {
+                                        backgroundColor: '#f5f5f5',
+                                    },
+                                }}
                             />
                         </div>
-                    ) : (
-                        !error && <Typography>No items found.</Typography>
                     )}
                 </Container>
             </Fragment>

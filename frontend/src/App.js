@@ -8,26 +8,38 @@ import DeleteItem from './components/DeleteItem';
 import ViewItems from './components/ViewItems';
 import Login from './components/Login';
 import Inventory from './components/Inventory';
+import PurchaseOrders from './common/PurchaseOrders';
+import SalesOrders from './common/SalesOrders';
+import Package from './common/Package';
+import Shipment from './common/Shipment';
+import Reports from './common/Reports';
+import ContactUs from './common/ContactUs';
+import InventoryCatalog from './common/InventoryCatalog';
 import './App.css';
-import { logout } from './services/api'; // Import the logout function
+import { logout } from './services/api';
 
 class App extends Component {
   constructor(props) {
     super(props);
+    console.log(localStorage.getItem('isAdminLogin'), "'isAdminLogin'");
     this.state = {
+      isAdminLogin: localStorage.getItem('isAdminLogin') === 'true' ? true : false,
       isAuthenticated: !!localStorage.getItem('accessToken'),
       view: 'dashboard', // Default view
     };
   }
 
+  // Function to set the current view
   setView = (view) => {
     this.setState({ view });
   };
 
+  // Function to handle login
   handleLogin = () => {
-    this.setState({ isAuthenticated: true, view: 'dashboard' });
+    this.setState({ isAuthenticated: true, view: 'dashboard', });
   };
 
+  // Function to handle logout
   handleLogout = () => {
     const refreshToken = localStorage.getItem('refreshToken');
 
@@ -41,6 +53,7 @@ class App extends Component {
       .then(() => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('isAdminLogin');
         this.setState({ isAuthenticated: false, view: 'login' });
         console.log('Logout successful.');
       })
@@ -50,6 +63,7 @@ class App extends Component {
       });
   };
 
+  // Unified renderView function
   renderView = () => {
     const { view } = this.state;
     switch (view) {
@@ -63,22 +77,37 @@ class App extends Component {
         return <ViewItems />;
       case 'inventory':
         return <Inventory />;
+      case 'purchaseOrders':
+        return <PurchaseOrders />;
+      case 'salesOrders':
+        return <SalesOrders />;
+      case 'package':
+        return <Package />;
+      case 'shipment':
+        return <Shipment />;
+      case 'reports':
+        return <Reports />;
+      case 'contactUs':
+        return <ContactUs />;
+      case 'inventoryCatalog':
+        return <InventoryCatalog />;
       case 'dashboard':
       default:
         return <Dashboard />;
     }
   };
 
+  // Main render function
   render() {
     const { isAuthenticated } = this.state;
-
+    console.log(this.state, "this.stateApp")
     return (
       <Fragment>
         <Header onLogout={this.handleLogout} isAuthenticated={isAuthenticated} />
         <div className="container">
           {isAuthenticated ? (
             <Fragment>
-              <Sidebar setView={this.setView} />
+              <Sidebar setView={this.setView} isAdminLogin={this.state?.isAdminLogin} />
               <main>{this.renderView()}</main>
             </Fragment>
           ) : (

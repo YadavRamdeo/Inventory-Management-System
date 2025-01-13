@@ -17,8 +17,12 @@ def home_view(request):
 urlpatterns = [
     path('', home_view, name='home'),
     path('api/admin/', admin.site.urls),
-    path('api/', include('inventory_app.urls')),  # Include app-level URLs correctly
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/logout/', LogoutView.as_view(), name='custom_token_blacklist'),
+
+    path('api/', include('inventory_app.urls')),  
+    path('api/', include('shiporders.urls')),
+
+
 ]
